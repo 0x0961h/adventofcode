@@ -1,1 +1,7 @@
 language: java
+
+jdk:
+    - oraclejdk8
+
+script:
+    - mvn clean compile cobertura:cobertura coveralls:report
