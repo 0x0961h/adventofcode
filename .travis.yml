@@ -5,3 +5,17 @@ jdk:
 
 script:
     - mvn clean compile cobertura:cobertura coveralls:report
+    
+env:
+  global:
+   - secure: "kpRtCloaPQmAkY/mX71DtXyl3vVbwC2xeQCZn/eY0cPV0YMj2NKEUEIOBNZg1UcGGU6u5E+0TnvYRSWZDglCqTqWQzee604o9WamAnbvqcaWGRw8grOTZi6LFXgokV9jIhZ+Zc5oxtARwxDeWfARbg2nZ5nzsrffmO3TQ8NRIudIc22ErI553q+ucSQpaEQNTVtCP5VGaQ/cm5E9jXW/1gtYUdoOOfc1U/OeuVXYM5XqotXkI0d08yuLSCCrdnnopIZ7KqkFfmxI4g8l9QeM2qrZfHVgU71uOzLyV0Uw/J9+SRlhiczwawOzcundqgt362t3pivJsIR2Bxh0sXdcDjgmqLgE1hUBR+zfI2u3sGnK2ENaLmyPfFbvB7sLm5tY2ryqo7B4f6Om7iRsbNDpRC4EGVaG5AWkqxqIzFU/LNxMGAS28119vuz2h6TpQw0S0hGRWsNn/E3BQoS7M4cvOXSNrog6iKgHqVP8yz2jfwN8B+TEoW8IWPijlKspMcUak7HYvkOa8L1hE53cJQ4x+Sa09jrOAklr81qmekjADdp6KezaDe0qQc7DLZY19QGKsjgf1oBK8CpBuE8Ec65GwoNWGfjBnumWz1FebFai4pbJjn4shWrtrXfjNtMldsgD11TQG/xVU5LqouA33hVye86ipBSEuhoK+YUkVdhDbss="
+
+addons:
+  coverity_scan:
+    project:
+      name: "0x0961h/adventofcode"
+      description: "Build submitted via Travis CI"
+    notification_email: 0x0961h@gmail.com
+    build_command_prepend: "mvn clean"
+    build_command: "mvn -DskipTests=true compile"
+    branch_pattern: coverity_scan
