@@ -2,9 +2,6 @@ language: java
 
 jdk:
     - oraclejdk8
-
-script:
-    - mvn clean compile cobertura:cobertura coveralls:report
     
 env:
   global:
@@ -18,4 +15,7 @@ addons:
     notification_email: 0x0961h@gmail.com
     build_command_prepend: "mvn clean"
     build_command: "mvn -DskipTests=true compile"
-    branch_pattern: coverity_scan
+    branch_pattern: master
+
+script:
+    - mvn clean compile cobertura:cobertura coveralls:report
