@@ -3,14 +3,12 @@ package x0961h.adventofcode.day06;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  * Created by 0x0961h on 06.12.2015.
  */
 public class DaySolverTest {
     @Test
-    public void exceptionTest() throws NoSuchAlgorithmException {
+    public void exceptionTest() {
         boolean exceptionCaught = false;
 
         try {
@@ -24,7 +22,7 @@ public class DaySolverTest {
     }
 
     @Test
-    public void test() throws NoSuchAlgorithmException {
+    public void test() {
         Assert.assertEquals(1000000, DaySolver.solve("turn on 0,0 through 999,999"));
         Assert.assertEquals(1000000 - 1000, DaySolver.solve("turn on 0,0 through 999,999\ntoggle 0,0 through 999,0"));
         Assert.assertEquals(1000000 - 1000 - 4, DaySolver.solve("turn on 0,0 through 999,999\ntoggle 0,0 through 999,0\nturn off 499,499 through 500,500"));
