@@ -12,14 +12,14 @@ public class DaySolverTest {
     @Test
     public void test() {
         Map<String, Integer> data = DaySolver.solve(
-                "123 -> x\n" +
-                "456 -> y\n" +
                 "x AND y -> d\n" +
-                "x OR y -> e\n" +
-                "x LSHIFT 2 -> f\n" +
-                "y RSHIFT 2 -> g\n" +
-                "NOT x -> h\n" +
-                "NOT y -> i"
+                        "x OR y -> e\n" +
+                        "x LSHIFT 2 -> f\n" +
+                        "y RSHIFT 2 -> g\n" +
+                        "NOT x -> h\n" +
+                        "NOT y -> i\n" +
+                        "123 -> x\n" +
+                        "456 -> y"
         );
 
         Assert.assertEquals(72, (int)data.get("d"));

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by 0x0961h on 07.12.2015.
@@ -13,87 +11,115 @@ import java.util.regex.Pattern;
 public class DaySolver {
     public static void main(String[] args) throws IOException {
         String input = new String(Files.readAllBytes(Paths.get("src/main/resources", "day07.data")));
-
         Map<String, Integer> solution = solve(input);
-
-        List<String> coll = new ArrayList<>(solution.keySet());
-        Collections.sort(coll);
-        System.out.println(coll);
-//        System.out.println("Result = " + solution);
+        System.out.println("Result = " + solution.get("a"));
     }
 
     public static Map<String, Integer> solve(String input) {
         Map<String, Integer> result = new HashMap<>();
+        Map<String, List<Runnable>> futures = new HashMap<>();
 
         Arrays.
-                stream(input.split("\n")).
-                forEach(cmd -> solveCommand(cmd, result));
+                stream(input.split("\r?\n")).
+                forEach(cmd -> solveCommand(cmd, result, futures));
 
         return result;
     }
 
-    private static void solveCommand(String cmd, Map<String, Integer> result) {
-        if (cmd.startsWith("NOT ")) {
-            // Complement
-            String[] data = cmd.substring("NOT ".length()).split("\\s*->\\s*");
-            String wireId = data[0];
-            String resultWireId = data[1];
-            if (!result.containsKey(wireId)) result.put(wireId, 0);
-            int wireData = result.get(wireId);
-            result.put(resultWireId, wireData ^ ((Integer.valueOf("111111111111111", 2) << 1) + 1));
-        } else {
-            String[] data = cmd.split("\\s*->\\s*");
+    private static void solveCommand(String cmdLine, Map<String, Integer> result, Map<String, List<Runnable>> futures) {
+        if (cmdLine.matches("\\w+ -> \\w+")) {
+            String[] movData = cmdLine.split(" -> ");
 
-            String resultWireId = data[1];
-
-            if (data[0].matches("\\d+")) {
-                // Provide signal to wire
-                result.put(resultWireId, Integer.parseInt(data[0]));
-            } else if (data[0].matches("([a-z]+|\\d+) (AND|OR) ([a-z]+)")) {
-                Matcher mat = Pattern.compile("([a-z]+|\\d+) (AND|OR) ([a-z]+)").matcher(data[0]);
-                mat.find();
-
-                int wire1Data;
-                if (mat.group(1).matches("\\d+")) {
-                    wire1Data = Integer.parseInt(mat.group(1));
+            Integer i = null;
+            if (movData[0].matches("\\d+")) {
+                i = Integer.valueOf(movData[0]);
+            } else {
+                if (result.containsKey(movData[0])) {
+                    i = result.get(movData[0]);
                 } else {
-                    String wire1ID = mat.group(1);
-                    if (!result.containsKey(wire1ID)) result.put(wire1ID, 0);
-                    wire1Data = result.get(wire1ID);
+                    future(futures, movData[0], () -> {
+                        set(movData[1], result.get(movData[0]), result, futures);
+                    });
                 }
-
-                String wire2ID = mat.group(3);
-                if (!result.containsKey(wire2ID)) result.put(wire2ID, 0);
-
-                int wire2Data = result.get(wire2ID);
-                int wireRes = 0;
-
-                String bitwiseCommand = mat.group(2);
-
-                switch (bitwiseCommand) {
-                    case "AND": wireRes = (short) (wire1Data & wire2Data); break;
-                    case "OR":  wireRes = (short) (wire1Data | wire2Data); break;
-                }
-
-                result.put(resultWireId, wireRes);
-            } else if (data[0].matches("([a-z]+) (LSHIFT|RSHIFT) (\\d+)")) {
-                Matcher mat = Pattern.compile("([a-z]+) (LSHIFT|RSHIFT) (\\d+)").matcher(data[0]);
-                mat.find();
-                String wire1ID = mat.group(1);
-                if (!result.containsKey(wire1ID)) result.put(wire1ID, 0);
-                int wire1Data = result.get(wire1ID);
-                int shiftAmount = Short.parseShort(mat.group(3));
-                int wireRes = 0;
-
-                String bitwiseCommand = mat.group(2);
-
-                switch (bitwiseCommand) {
-                    case "LSHIFT":  wireRes = (short) (wire1Data << shiftAmount); break;
-                    case "RSHIFT":  wireRes = (short) (wire1Data >> shiftAmount); break;
-                }
-
-                result.put(resultWireId, wireRes);
             }
+
+            if (i != null) set(movData[1], i, result, futures);
+        } else if (cmdLine.matches("NOT \\w+ -> \\w+")) {
+            cmdLine = cmdLine.substring("NOT ".length());
+            String[] negData = cmdLine.split(" -> ");
+
+            Runnable action = () -> {
+                Integer val;
+                if (negData[0].matches("\\d+"))
+                    val = Integer.valueOf(negData[0]);
+                else
+                    val = result.get(negData[0]);
+
+                set(
+                        negData[1],
+                        val ^ ((Integer.valueOf("111111111111111", 2) << 1) + 1),
+                        result,
+                        futures
+                );
+            };
+
+            if (result.containsKey(negData[0]))
+                action.run();
+            else
+                future(futures, negData[0], action);
+        } else {
+            String[] logicData = cmdLine.split(" -> ");
+
+            String target = logicData[1];
+            String[] cmdData = logicData[0].split(" ");
+
+            Runnable logicOp = () -> {
+                Integer a1, a2, b = 0;
+                if (cmdData[0].matches("\\d+")) a1 = Integer.valueOf(cmdData[0]); else a1 = result.get(cmdData[0]);
+                if (cmdData[2].matches("\\d+")) a2 = Integer.valueOf(cmdData[2]); else a2 = result.get(cmdData[2]);
+
+                switch (cmdData[1]) {
+                    case "OR": b = a1 | a2; break;
+                    case "AND": b = a1 & a2; break;
+                    case "LSHIFT": b = a1 << a2; break;
+                    case "RSHIFT": b = a1 >> a2; break;
+                }
+
+                set(target, b, result, futures);
+            };
+
+            if (!cmdData[0].matches("\\d+") && !result.containsKey(cmdData[0])) {
+                future(futures, cmdData[0], () -> {
+                    if (!cmdData[2].matches("\\d+") && !result.containsKey(cmdData[2])) return;
+                    logicOp.run();
+                });
+            }
+
+            if (!cmdData[2].matches("\\d+") && !result.containsKey(cmdData[2])) {
+                future(futures, cmdData[2], () -> {
+                    if (!cmdData[0].matches("\\d+") && !result.containsKey(cmdData[0])) return;
+                    logicOp.run();
+                });
+            }
+
+            if (result.containsKey(cmdData[0]) && result.containsKey(cmdData[2]) ||
+                    result.containsKey(cmdData[0]) && cmdData[2].matches("\\d+") ||
+                    result.containsKey(cmdData[2]) && cmdData[0].matches("\\d+")) {
+                logicOp.run();
+            }
+        }
+    }
+
+    private static void future(Map<String, List<Runnable>> futures, String var, Runnable future) {
+        if (!futures.containsKey(var)) futures.put(var, new ArrayList<>());
+        futures.get(var).add(future);
+    }
+
+    private static void set(String variableName, Integer value, Map<String, Integer> result, Map<String, List<Runnable>> futures) {
+        result.put(variableName, value);
+        if (futures.containsKey(variableName)) {
+            for (Runnable future : futures.get(variableName)) future.run();
+            futures.remove(variableName);
         }
     }
 }
