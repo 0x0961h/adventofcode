@@ -24,16 +24,16 @@ public class DaySolverTest {
         Assert.assertEquals(7,  DaySolver.codeLength("\"\\\\x27\""));
         Assert.assertEquals(4,  DaySolver.stringLength("\"\\\\x27\""));
 
-//        Assert.assertEquals(12,  DaySolver.solve(
-//                "\"\"\n" +
-//                        "\"abc\"\n" +
-//                        "\"aaa\\\"aaa\"\n" +
-//                        "\"\\x27\""
-//        ));
+        Assert.assertEquals(12,  DaySolver.solve(
+                "\"\"\n" +
+                        "\"abc\"\n" +
+                        "\"aaa\\\"aaa\"\n" +
+                        "\"\\x27\""
+        ));
     }
 
     @Test
-    public void escaperTest() {
+    public void unescaperTest() {
         {
             String line = "\"\"";
             String res = DaySolver.unescape(line.substring(1, line.length() - 1));

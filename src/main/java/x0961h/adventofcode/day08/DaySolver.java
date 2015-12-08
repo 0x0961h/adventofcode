@@ -17,13 +17,7 @@ public class DaySolver {
 
     public static long solve(String input) {
         return Arrays.stream(input.split("\n")).
-                map(line -> {
-                    System.out.println(line);
-                    System.out.println(" " + unescape(line.substring(1, line.length() - 1)));
-                    System.out.println();
-
-                    return codeLength(line) - stringLength(line);
-                }).
+                map(line -> codeLength(line) - stringLength(line)).
                 collect(Collectors.summarizingInt(value -> value)).
                 getSum();
     }
