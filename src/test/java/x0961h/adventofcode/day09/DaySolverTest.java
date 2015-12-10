@@ -4,7 +4,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 /**
- * Created by 0x0961h on 07.12.2015.
+ * Created by 0x0961h on 09.12.2015.
  */
 public class DaySolverTest {
     @Test
