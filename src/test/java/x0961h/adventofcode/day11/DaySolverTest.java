@@ -37,7 +37,7 @@ public class DaySolverTest {
     }
 
     @Test
-    public void soultionTest() {
+    public void solutionTest() {
         Assert.assertEquals("abcdffaa", DaySolver.solve("abcdefgh"));
         Assert.assertEquals("ghjaabcc", DaySolver.solve("ghijklmn"));
     }
