@@ -17,7 +17,7 @@ public class DaySolverTest {
     }
 
     @Test
-    public void soultionTest() {
+    public void solutionTest() {
         Assert.assertEquals(6, DaySolver.solve("[1,2,3]"));
         Assert.assertEquals(6, DaySolver.solve("{\"a\":2,\"b\":4}"));
         Assert.assertEquals(3, DaySolver.solve("[[[3]]]"));

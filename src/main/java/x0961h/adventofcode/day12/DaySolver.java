@@ -17,7 +17,7 @@ public class DaySolver {
     }
 
     public static int solve(String input) {
-        input = input.replaceAll("\\s+","").replaceAll("\"[^\"]+\"","");
+        input = input.replaceAll("\\s+", "").replaceAll("\"[^\"]+\"", "");
 
         Pattern pat = Pattern.compile("-?\\d+");
         Matcher mat = pat.matcher(input);
