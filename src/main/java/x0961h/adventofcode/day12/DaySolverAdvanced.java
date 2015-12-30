@@ -1,5 +1,9 @@
 package x0961h.adventofcode.day12;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -8,62 +12,50 @@ import java.nio.file.Paths;
  * Created by 0x0961h on 13.12.2015.
  */
 public class DaySolverAdvanced {
-    // 59607 -- low
-    // 156051 -- high
-
     public static void main(String[] args) throws IOException {
         String input = new String(Files.readAllBytes(Paths.get("src/main/resources", "day12.data")));
         System.out.println("Result = " + solve(input));
     }
 
-    public static int solve(String input) {
-        System.out.println(input);
-        input = input.replaceAll("\\s+", "").replaceAll("\"red\"", "QQQ").replaceAll("\"[^\"]+\"", "");
+    public static long solve(String input) {
+        Long sum = 0L;
+        Object dataRaw = JSONValue.parse(input);
 
-        int i = input.indexOf("QQQ");
-        int nesting = 0;
+        sum += parseIteration(dataRaw);
 
-        lol: while (i != -1) {
-            int start = i;
-            int end = i + 3;
+        return sum;
+    }
 
-            while (start > 0 && input.charAt(start) != '{') {
-                if (input.charAt(start) == '[') {
-                    input = input.replaceFirst("QQQ", "aaa");
-                    i = input.indexOf("QQQ");
-                    continue lol;
-                }
-                start--;
-            }
-
-            while (end < input.length() - 1 && input.charAt(end) != '}') {
-                end++;
-
-                if (input.charAt(end) == '{') {
-                    nesting++;
-                }
-
-                while (input.charAt(end) == '}' && nesting > 0) {
-                    end++;
-                    nesting--;
+    private static long parseIteration(Object dataRaw) {
+        Long tempSum = 0L;
+        if (dataRaw instanceof JSONArray) {
+            JSONArray data = (JSONArray) dataRaw;
+            for (Object o : data) {
+                if (o instanceof Long) {
+                    tempSum += (Long) o;
+                } else if (o instanceof JSONObject) {
+                    tempSum += parseIteration(o);
+                } else if (o instanceof JSONArray) {
+                    tempSum += parseIteration(o);
                 }
             }
-
-            end++;
-
-            if (input.charAt(start) == '[' && input.charAt(end - 1) == ']') {
-                input = input.replaceFirst("QQQ", "aaa");
-            } else {
-                String s = input.substring(start, end);
-                s = s.replaceAll("([{}\\[\\]])", "\\\\$1");
-                System.out.println(s);
-                input = input.replaceFirst(s, "~~~");
+        } else {
+            JSONObject data = (JSONObject) dataRaw;
+            for (Object o : data.values()) {
+                if (o instanceof Long) {
+                    tempSum += (Long) o;
+                } else if (o instanceof JSONObject) {
+                    tempSum += parseIteration(o);
+                } else if (o instanceof JSONArray) {
+                    tempSum += parseIteration(o);
+                } else if (o instanceof String) {
+                    if (o.equals("red")) return 0;
+                } else {
+                    System.out.println(o.getClass());
+                }
             }
-
-            i = input.indexOf("QQQ");
         }
 
-        System.out.println(input);
-        return DaySolver.solve(input);
+        return tempSum;
     }
 }
