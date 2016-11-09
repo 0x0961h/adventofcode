@@ -9,9 +9,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Created by 0x0961h on 13.12.2015.
+ * Created by 0x0961h on 09.11.2016.
  */
-public class DaySolver {
+public class DaySolverAdvanced {
     public static void main(String[] args) throws IOException {
         String input = new String(Files.readAllBytes(Paths.get("src/main/resources", "day13.data")));
 
@@ -19,6 +19,20 @@ public class DaySolver {
     }
 
     public static int solve(String input) {
+        {
+            Map<Integer, String> people = new HashMap<>();
+            Map<String, Integer> peopleLookup = new HashMap<>();
+            int[][] matr = extractDataFromInput(input, people, peopleLookup);
+
+            System.out.println(people);
+
+            for (String name : people.values()) {
+                input += "\n" + name + " would gain 0 happiness units by sitting next to Us.";
+                input += "\nUs would gain 0 happiness units by sitting next to " + name + ".";
+            }
+
+        }
+
         Map<Integer, String> people = new HashMap<>();
         Map<String, Integer> peopleLookup = new HashMap<>();
         int[][] matr = extractDataFromInput(input, people, peopleLookup);
@@ -26,8 +40,6 @@ public class DaySolver {
         List<List<String>> sets = new ArrayList<>();
         Integer[] indices = new Integer[people.size()];
         for (int i = 0; i < indices.length; i++) indices[i] = 0;
-
-//        System.out.println(people);
 
         do {
             List<String> set = Arrays.stream(indices).map(people::get).distinct().collect(Collectors.toList());
