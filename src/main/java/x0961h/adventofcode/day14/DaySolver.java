@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by 0x0961h on 13.12.2015.
+ * Created by 0x0961h on 18.12.2015.
  */
 public class DaySolver {
     private static final boolean debug = false;

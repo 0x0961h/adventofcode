@@ -6,10 +6,10 @@ import org.junit.Test;
 /**
  * Created by 0x0961h on 18.12.2015.
  */
-public class DaySolverTest {
+public class DaySolverAdvancedTest {
     @Test
     public void solutionTest() {
-        Assert.assertEquals(1120, DaySolver.solve("Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.\n" +
+        Assert.assertEquals(688, DaySolverAdvanced.solve("Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.\n" +
                 "Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.", 1000));
     }
 }
