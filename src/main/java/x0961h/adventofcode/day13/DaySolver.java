@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by 0x0961h on 13.12.2015.
@@ -18,30 +19,33 @@ public class DaySolver {
         Map<Integer, String> people = new HashMap<>();
         int[][] matr = extractDataFromInput(input, people);
 
-//        System.out.println(people);
-//        System.out.println(Arrays.deepToString(matr));
-
         List<Set<String>> sets = new ArrayList<>();
-        for (int i0 = 0; i0 < 4; i0++) {
-            for (int i1 = 0; i1 < 4; i1++) {
-                for (int i2 = 0; i2 < 4; i2++) {
-                    for (int i3 = 0; i3 < 4; i3++) {
-                        HashSet<String> hs = new HashSet<>(Arrays.asList(
-                                people.get(i0),
-                                people.get(i1),
-                                people.get(i2),
-                                people.get(i3)
-                        ));
+        Integer[] indices = new Integer[people.size()];
+        for (int i = 0; i < indices.length; i++) indices[i] = 0;
 
-                        if (hs.size() == 4) sets.add(hs);
-                    }
-                }
-            }
-        }
+        do {
+            HashSet<String> hs = new HashSet<>(
+                    Arrays.stream(indices).map(people::get).collect(Collectors.toList())
+            );
 
-        System.out.println(sets);
+            if (hs.size() == 4) sets.add(hs);
+        } while (incrementIndex(indices));
+
+//        for (Set<String> set : sets) {
+//
+//        }
 
         return -1;
+    }
+
+    private static boolean incrementIndex(Integer[] indices) {
+        for (int i = indices.length - 1; i >= 0; i--) {
+            indices[i]++;
+            if (indices[i] < indices.length) return true;
+            indices[i] = 0;
+        }
+
+        return false;
     }
 
     private static int[][] extractDataFromInput(String input, final Map<Integer, String> people) {
