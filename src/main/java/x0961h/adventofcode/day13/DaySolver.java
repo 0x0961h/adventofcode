@@ -1,6 +1,8 @@
 package x0961h.adventofcode.day13;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,31 +13,55 @@ import java.util.stream.Collectors;
  */
 public class DaySolver {
     public static void main(String[] args) throws IOException {
-//        String input = new String(Files.readAllBytes(Paths.get("src/main/resources", "day12.data")));
-//        System.out.println("Result = " + solve(input));
+        String input = new String(Files.readAllBytes(Paths.get("src/main/resources", "day13.data")));
+        System.out.println("Result = " + solve(input));
     }
 
     public static int solve(String input) {
         Map<Integer, String> people = new HashMap<>();
-        int[][] matr = extractDataFromInput(input, people);
+        Map<String, Integer> peopleLookup = new HashMap<>();
+        int[][] matr = extractDataFromInput(input, people, peopleLookup);
 
-        List<Set<String>> sets = new ArrayList<>();
+        List<List<String>> sets = new ArrayList<>();
         Integer[] indices = new Integer[people.size()];
         for (int i = 0; i < indices.length; i++) indices[i] = 0;
 
-        do {
-            HashSet<String> hs = new HashSet<>(
-                    Arrays.stream(indices).map(people::get).collect(Collectors.toList())
-            );
+//        System.out.println(people);
 
-            if (hs.size() == 4) sets.add(hs);
+        do {
+            List<String> set = Arrays.stream(indices).map(people::get).distinct().collect(Collectors.toList());
+            if (set.size() == people.size()) sets.add(set);
         } while (incrementIndex(indices));
 
-//        for (Set<String> set : sets) {
-//
-//        }
+        System.out.println(sets);
 
-        return -1;
+        int winningScore = Integer.MIN_VALUE;
+
+        for (List<String> set : sets) {
+//            System.out.println(set);
+
+            int setScore = 0;
+
+            for (int i = 0; i < set.size(); i++) {
+                String p1 = set.get(i);
+                String p2 = (i + 1 == set.size() ? set.get(0) : set.get(i + 1));
+
+                int i1 = peopleLookup.get(p1);
+                int i2 = peopleLookup.get(p2);
+
+                int score1 = matr[i1][i2];
+                int score2 = matr[i2][i1];
+
+//                System.out.println("\t" + p1 + " vs " + p2);
+//                System.out.println("\t  " + score1 + " + " + score2);
+
+                setScore += score1 + score2;
+
+                winningScore = Math.max(winningScore, setScore);
+            }
+        }
+
+        return winningScore;
     }
 
     private static boolean incrementIndex(Integer[] indices) {
@@ -48,8 +74,7 @@ public class DaySolver {
         return false;
     }
 
-    private static int[][] extractDataFromInput(String input, final Map<Integer, String> people) {
-        Map<String, Integer> peopleLookup = new HashMap<>();
+    private static int[][] extractDataFromInput(String input, final Map<Integer, String> people, Map<String, Integer> peopleLookup) {
         Map<Map.Entry<String, String>, Integer> tempMatr = new HashMap<>();
 
         Pattern pat = Pattern.compile("(\\w+) would (\\w+) (\\d+) happiness units by sitting next to (\\w+).");
