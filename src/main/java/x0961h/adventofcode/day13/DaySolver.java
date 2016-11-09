@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 public class DaySolver {
     public static void main(String[] args) throws IOException {
         String input = new String(Files.readAllBytes(Paths.get("src/main/resources", "day13.data")));
+
+        long timer = new Date().getTime();
         System.out.println("Result = " + solve(input));
+        System.out.println("(" + (new Date().getTime() - timer) + "ms elapsed)");
     }
 
     public static int solve(String input) {
